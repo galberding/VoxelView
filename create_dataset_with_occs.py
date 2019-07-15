@@ -20,8 +20,8 @@ qube_path = "dataset/qube/"
 sphere_path = "dataset/sphere/"
 pen_path = "dataset/pen/"
 
-range_quat_cube = 30 * 1000
-range_quat_pen = 10 * 1000
+range_quat_cube = 10
+range_quat_pen = 10 #* 1000
 
 
 def create_dataset_dir():
@@ -71,6 +71,7 @@ def safe_sample(points, occ, voxel, path):
     :param path:
     '''
     files = (len([name for name in os.listdir(path)]))
+    print(files)
     safe_dir = path + str(files).zfill(5) + "/"
     if not os.path.exists(safe_dir):
         os.makedirs(safe_dir)
@@ -122,36 +123,37 @@ if __name__ == '__main__':
     create_dataset_dir()
 
     # qube
-    for shapeSize in [8, 9, 10, 11]:
-        dimension = voxelRange * shapeSize / voxelSpaceSize
-        cloud = generate_cloud_cube(size=voxelSpaceSize, dimension=dimension)
+    # for shapeSize in [8, 9, 10, 11]:
+    #     dimension = voxelRange * shapeSize / voxelSpaceSize
+    #     cloud = generate_cloud_cube(size=voxelSpaceSize, dimension=dimension)
+    #
+    #     conf_list = []
+    #     for i in range(range_quat_cube):
+    #         quat = Quaternion.random()
+    #         if i == 0: quat = Quaternion()  # first quat = 1 + 0i + 0j + 0k
+    #         if i % 100 == 0: print(strftime("%H%M%S", gmtime()), 'cube', '\t', 'shapeSize', shapeSize, '\t', 'i', i,
+    #                                '\t',
+    #                                'quat', quat)
+    #         transformed = transform_cloud(cloud, quat)
+    #         conf_list.append(transformed)
+    #     gen_samples(qube, conf_list)
 
-        conf_list = []
-        for i in range(range_quat_cube):
-            quat = Quaternion.random()
-            if i == 0: quat = Quaternion()  # first quat = 1 + 0i + 0j + 0k
-            if i % 100 == 0: print(strftime("%H%M%S", gmtime()), 'cube', '\t', 'shapeSize', shapeSize, '\t', 'i', i,
-                                   '\t',
-                                   'quat', quat)
-            transformed = transform_cloud(cloud, quat)
-            conf_list.append(transformed)
-        gen_samples(qube, conf_list)
+    # # Sphere
+    # transf_spheres = []
+    # for k in range(7):
+    #     for shapeSize in [8, 9, 10, 11, 12, 13, 14, 15, 16]:
+    #         dimension = voxelRange * shapeSize / voxelSpaceSize
+    #         cloud = generate_cloud_sphere(size=voxelSpaceSize, dimension=dimension)
 
-    # Sphere
-    transf_spheres = []
-    for shapeSize in [8, 9, 10, 11, 12, 13, 14, 15, 16]:
-        dimension = voxelRange * shapeSize / voxelSpaceSize
-        cloud = generate_cloud_sphere(size=voxelSpaceSize, dimension=dimension)
+    #         quat = Quaternion.random()
+    #         cloud_transformed = transform_cloud(cloud, quat)  #
 
-        quat = Quaternion.random()
-        cloud_transformed = transform_cloud(cloud, quat)  #
+    #         # voxel = cloud2voxel(cloud_transformed, voxelRange, size=voxelSpaceSize)
+    #         transf_spheres.append(cloud_transformed)
+    # gen_samples(sphere, transf_spheres)
 
-        # voxel = cloud2voxel(cloud_transformed, voxelRange, size=voxelSpaceSize)
-        transf_spheres.append(cloud_transformed)
-    gen_samples(sphere, transf_spheres)
-
-    # # Pen
-    for shapeSize in [8, 9, 10, 11, 12, 13, 14, 15, 16]:
+    # Pen
+    for shapeSize in [13, 14, 15, 16]:
         dimension = voxelRange * shapeSize / voxelSpaceSize
         cloud = generate_cloud_pen(size=voxelSpaceSize, dimension=dimension)
         conf_list = []
