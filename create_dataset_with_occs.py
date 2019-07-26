@@ -2,8 +2,7 @@ from main import generate_cloud_pen, generate_cloud_sphere, generate_cloud_cube,
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 from time import gmtime, strftime
-from multiprocessing import Pool
-
+from multiprocessing import Pool, cpu_count
 import matplotlib.pyplot as plt
 import os
 from pyquaternion import Quaternion
@@ -20,7 +19,8 @@ qube_path = "dataset/qube/"
 sphere_path = "dataset/sphere/"
 pen_path = "dataset/pen/"
 
-range_quat_cube = 45
+# range_quat_cube = 45
+range_quat_cube = 5
 range_quat_pen = 20 #* 10
 
 
@@ -70,6 +70,8 @@ def safe_sample(points, occ, voxel, path):
     :param voxel:
     :param path:
     '''
+    if(voxel is None):
+        return
     files = (len([name for name in os.listdir(path)]))
     print(files)
     safe_dir = path + str(files).zfill(5) + "/"
@@ -82,6 +84,7 @@ def safe_sample(points, occ, voxel, path):
 def qube(cloud):
     points, occs = gen_points(cloud, point_samples)
     voxel = cloud2voxel(cloud, voxelRange, size=voxelSpaceSize)
+
     # print("done!")
     return (points, occs, voxel, qube_path)
 
@@ -110,7 +113,7 @@ def gen_samples(generator, config_list):
     :param generator: helper methodname which calcupates occs (qube | sphere | pen)
     :param config_list: list of transformed pointclouds
     '''
-    pool = Pool(24)
+    pool = Pool(cpu_count())
     results = pool.map(generator, config_list)
     pool.close()
     pool.join()
@@ -124,20 +127,20 @@ if __name__ == '__main__':
 
 
     # qube
-    # for shapeSize in [8, 9, 10, 11]:
-    #     dimension = voxelRange * shapeSize / voxelSpaceSize
-    #     cloud = generate_cloud_cube(size=voxelSpaceSize, dimension=dimension)
-    #
-    #     conf_list = []
-    #     for i in range(range_quat_cube):
-    #         quat = Quaternion.random()
-    #         if i == 0: quat = Quaternion()  # first quat = 1 + 0i + 0j + 0k
-    #         if i % 100 == 0: print(strftime("%H%M%S", gmtime()), 'cube', '\t', 'shapeSize', shapeSize, '\t', 'i', i,
-    #                                '\t',
-    #                                'quat', quat)
-    #         transformed = transform_cloud(cloud, quat)
-    #         conf_list.append(transformed)
-    #     gen_samples(qube, conf_list)
+    for shapeSize in [6, 7,8, 9]:
+        dimension = voxelRange * shapeSize / voxelSpaceSize
+        cloud = generate_cloud_cube(size=voxelSpaceSize, dimension=dimension)
+
+        conf_list = []
+        for i in range(range_quat_cube):
+            quat = Quaternion.random()
+            if i == 0: quat = Quaternion()  # first quat = 1 + 0i + 0j + 0k
+            if i % 100 == 0: print(strftime("%H%M%S", gmtime()), 'cube', '\t', 'shapeSize', shapeSize, '\t', 'i', i,
+                                   '\t',
+                                   'quat', quat)
+            transformed = transform_cloud(cloud, quat)
+            conf_list.append(transformed)
+        gen_samples(qube, conf_list)
 
     # # Sphere
     # transf_spheres = []
