@@ -20,13 +20,8 @@ qube_path = "dataset/qube/"
 sphere_path = "dataset/sphere/"
 pen_path = "dataset/pen/"
 
-<<<<<<< HEAD
 range_quat_cube = 45
 range_quat_pen = 20 #* 10
-=======
-range_quat_cube = 10
-range_quat_pen = 10 #* 1000
->>>>>>> 6660f6ba04b87ee0300821ef9c49796221fc2fce
 
 
 def create_dataset_dir():
