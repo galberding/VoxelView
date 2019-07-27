@@ -175,19 +175,19 @@ def gen_dataset(voxel_model, path, samples, voxel_space_size=16, voxel_range=2.0
     test_path = path+"test/"
     global working_path
     working_path = train_path
-    if voxel_model is "qube":
+    if voxel_model in "qube":
         qube_generation_process(samples)
-    elif voxel_model is "sphere":
+    elif voxel_model in "sphere":
         sphere_generation_process(samples)
-    elif voxel_model is "pen":
+    elif voxel_model in "pen":
         pen_generation_process(samples)
 
     working_path = test_path
-    if voxel_model is "qube":
+    if voxel_model in "qube":
         qube_generation_process(math.ceil(samples * 0.33))
-    elif voxel_model is "sphere":
+    elif voxel_model in "sphere":
         sphere_generation_process(math.ceil(samples * 0.33))
-    elif voxel_model is "pen":
+    elif voxel_model in "pen":
         pen_generation_process(math.ceil(samples * 0.33))
 
 
