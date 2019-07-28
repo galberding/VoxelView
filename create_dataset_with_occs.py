@@ -129,7 +129,7 @@ def qube_generation_process(samples):
 def sphere_generation_process(samples):
     transf_spheres = []
     for k in range(samples):
-        for shapeSize in [8, 9, 10, 11]:
+        for shapeSize in [2,4,6,8]:
             dimension = voxelRange * shapeSize / voxelSpaceSize
             cloud = generate_cloud_sphere(size=voxelSpaceSize, dimension=dimension)
 

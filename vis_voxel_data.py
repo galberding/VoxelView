@@ -10,10 +10,10 @@ import os
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
 
-im_out_path = "../out/pen/plots/"
 
-def vis_qube(path):
-    for root, dirs, files in os.walk(path):
+
+def vis_data(dir_in, dir_out):
+    for root, dirs, files in os.walk(dir_in):
         print(dirs)
         dirs = sorted(dirs)
         for dir in dirs:
@@ -32,14 +32,14 @@ def vis_qube(path):
             ax.dist =3
             ax.set_axis_off()
             # plt.show()
-            fig.savefig(im_out_path + dir)
+            fig.savefig(dir_out + dir)
             # break
             # print(ma)
 
         break
 
 def getImage(path):
-    return OffsetImage(plt.imread(path), zoom=0.06)
+    return OffsetImage(plt.imread(path), zoom=0.07)
 
 
 def vis_latent_space(path, sample_path):
@@ -55,8 +55,10 @@ def vis_latent_space(path, sample_path):
             ab = AnnotationBbox(getImage(os.path.join(root,file)), (samples[count, 0], samples[count, 1]), frameon=False)
             ax.add_artist(ab)
             count += 1
-    # fig.savefig("../out/pen/Latent_visualization")
+    fig.savefig("../assets/Latent_visualization_spheres")
     plt.show()
 if __name__ == '__main__':
-    # vis_qube("../data/dataset/pen/train")
-    vis_latent_space(im_out_path, "../out/pen/latent_samples.npy")
+    dir_out = "../out/sphere/plots/"
+    dir_in = "../data/dataset/sphere/train"
+    # vis_data(dir_in, dir_out)
+    vis_latent_space(dir_out, "../assets/latent_samples_spheres.npy")
