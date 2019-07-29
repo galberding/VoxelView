@@ -30,9 +30,9 @@ def vis_data(dir_in, dir_out):
             ax.voxels(voxel,edgecolor="k")
             ax.view_init(elev=0, azim=0)
             ax.dist =3
-            ax.set_axis_off()
-            # plt.show()
-            fig.savefig(dir_out + dir)
+            # ax.set_axis_off()
+            plt.show()
+            # fig.savefig(dir_out + dir)
             # break
             # print(ma)
 
@@ -59,6 +59,6 @@ def vis_latent_space(path, sample_path):
     plt.show()
 if __name__ == '__main__':
     dir_out = "../out/sphere/plots/"
-    dir_in = "../data/dataset/sphere/train"
-    # vis_data(dir_in, dir_out)
-    vis_latent_space(dir_out, "../assets/latent_samples_spheres.npy")
+    dir_in = "../data/dataset/qube/train"
+    vis_data(dir_in, dir_out)
+    # vis_latent_space(dir_out, "../assets/latent_samples_spheres.npy")
