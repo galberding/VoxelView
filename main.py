@@ -10,7 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
 
-def generate_cloud_cube(size=16,dimension=1.0):
+def generate_cloud_cube(size=16,dimension=.5):
     # generates point cloud with center 0,0,0
     pts = []
     for i in np.linspace(-dimension, dimension, size):
@@ -21,7 +21,7 @@ def generate_cloud_cube(size=16,dimension=1.0):
     return np.array(pts, dtype='float32')
 
 
-def generate_cloud_sphere(size=16,dimension=1.0):
+def generate_cloud_sphere(size=16,dimension=.5):
     # samples = int(round(size * size * np.sqrt(size)))
     samples = int(round(size * size * size))
     pts = []
@@ -37,7 +37,7 @@ def generate_cloud_sphere(size=16,dimension=1.0):
     return np.array(pts, dtype='float32')
 
 
-def generate_cloud_pen(size=16, dimension=1.0):
+def generate_cloud_pen(size=16, dimension=.5):
     pts = []
     pen_2r = 0.008
     pen_len = 0.1

@@ -10,14 +10,12 @@ import os
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
 
-
-
 def vis_data(dir_in, dir_out):
     for root, dirs, files in os.walk(dir_in):
         print(dirs)
         dirs = sorted(dirs)
         for dir in dirs:
-            name = os.path.join(root,dir, "sample.npz")
+            name = os.path.join(root, dir, "sample.npz")
             print("Name: ", name)
             data = np.load(name)
             voxel = np.array(data["voxel"], dtype=np.float)
@@ -27,9 +25,9 @@ def vis_data(dir_in, dir_out):
             fig = plt.figure()
             ax = fig.gca(projection='3d')
             ax.set_aspect('equal')
-            ax.voxels(voxel,edgecolor="k")
-            ax.view_init(elev=0, azim=0)
-            ax.dist =3
+            ax.voxels(voxel, edgecolor="k")
+            # ax.view_init(elev=0, azim=0)
+            # ax.dist = 3
             # ax.set_axis_off()
             plt.show()
             # fig.savefig(dir_out + dir)
@@ -37,6 +35,7 @@ def vis_data(dir_in, dir_out):
             # print(ma)
 
         break
+
 
 def getImage(path):
     return OffsetImage(plt.imread(path), zoom=0.07)
@@ -51,14 +50,17 @@ def vis_latent_space(path, sample_path):
         files = sorted(files)
         print(files)
         for file in files:
-            print(os.path.join(root,file))
-            ab = AnnotationBbox(getImage(os.path.join(root,file)), (samples[count, 0], samples[count, 1]), frameon=False)
+            print(os.path.join(root, file))
+            ab = AnnotationBbox(getImage(os.path.join(root, file)), (samples[count, 0], samples[count, 1]),
+                                frameon=False)
             ax.add_artist(ab)
             count += 1
     fig.savefig("../assets/Latent_visualization_spheres")
     plt.show()
+
+
 if __name__ == '__main__':
     dir_out = "../out/sphere/plots/"
-    dir_in = "../data/dataset/qube/train"
+    dir_in = "dataset/pen/train"
     vis_data(dir_in, dir_out)
     # vis_latent_space(dir_out, "../assets/latent_samples_spheres.npy")
