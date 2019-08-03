@@ -168,4 +168,4 @@ def gen_dataset(voxel_model, path, samples, voxel_space_size=16, voxel_range=2.0
 
 
 if __name__ == '__main__':
-    gen_dataset("sphere", "dataset/", 3)
+    gen_dataset("pen", "../data/dataset/", 30)
