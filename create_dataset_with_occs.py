@@ -127,8 +127,8 @@ def generation_process(samples, gen_meth, size):
     gen_samples(occ_generation, transf_spheres)
 
 
-def gen_dataset(voxel_model, path, samples, voxel_space_size=16, voxel_range=2.0, pen_sizes=[8, 9, 10, 11],
-                sphere_sizes=[8, 9, 10, 11], qube_sizes=[6, 7, 8, 9]):
+def gen_dataset(voxel_model, path, samples, voxel_space_size=16, voxel_range=2.0, pen_sizes=[6, 7, 8, 9, 10, 11],
+                sphere_sizes=[8, 9, 10, 11, 12, 13], qube_sizes=[4, 5, 6, 7, 8, 9]):
     '''
     Generate the voxel qube dataset.
     :param voxel_model (String): qube | sphere | pen
@@ -140,6 +140,7 @@ def gen_dataset(voxel_model, path, samples, voxel_space_size=16, voxel_range=2.0
     :param qube_sizes:
     :return: writes specified datasamples to given path, divided in train/test
     '''
+
     mode = {
         "qube": (generate_cloud_cube, qube_sizes),
         "sphere": (generate_cloud_sphere, sphere_sizes),
@@ -168,4 +169,6 @@ def gen_dataset(voxel_model, path, samples, voxel_space_size=16, voxel_range=2.0
 
 
 if __name__ == '__main__':
-    gen_dataset("pen", "../data/dataset/", 30)
+    gen_dataset("pen", "../data/dataset/", 50, pen_sizes=[6, 7, 8, 9, 10, 11, 12, 13, 14])
+    gen_dataset("sphere", "../data/dataset/", 50, pen_sizes=[6, 7, 8, 9, 10, 11, 12, 13, 14])
+    gen_dataset("qube", "../data/dataset/", 50, pen_sizes=[6, 7, 8, 9, 10, 11, 12, 13, 14])
