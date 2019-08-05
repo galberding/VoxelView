@@ -155,10 +155,10 @@ def gen_dataset(voxel_model, path, samples, voxel_space_size=16, voxel_range=2.0
     voxelSpaceSize = voxel_space_size
     global voxelRange
     voxelRange = voxel_range
-    path += voxel_model + "/"
+    # path += voxel_model + "/"
     create_dataset_dir(path)
-    train_path = path + "train/"
-    test_path = path + "test/"
+    train_path =os.path.join( path, "train", '')
+    test_path = os.path.join( path, "test", '')
     global working_path
 
     working_path = train_path
