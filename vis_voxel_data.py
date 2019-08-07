@@ -29,11 +29,7 @@ def vis_data(dir_in, dir_out):
             occ_points = points[occ == 1]
             print(occ_points.shape)
             voxel_rec = cloud2voxel(occ_points,1.0, 32)
-            # voxel = generate_cloud_cube()
-            # ma = np.random.choice([0, 1], size=(16, 16, 16), p=[0.99, 0.01])
-            # fig = plt.figure()
             fix, axes = plt.subplots(1,3,subplot_kw=dict(projection='3d'), figsize=(25,20))
-            # ax = fig.gca(projection='3d')
             axes[0].set_aspect('equal')
             axes[1].set_aspect('equal')
             axes[2].set_aspect('equal')
