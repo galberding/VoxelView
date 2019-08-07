@@ -130,7 +130,7 @@ def generation_process(samples, gen_meth, size):
 
 
 def gen_dataset(voxel_model, path, samples, voxel_space_size=32, voxel_range=1.0, pen_sizes=[6, 7, 8, 9, 10, 11],
-                sphere_sizes=[8, 9, 10, 11, 12, 13], qube_sizes=[9]):
+                sphere_sizes=[8, 9, 10, 11, 12, 13], qube_sizes=[9,9,9,9,9,9,9,9,9,9]):
     '''
     Generate the voxel qube dataset.
     :param voxel_model (String): qube | sphere | pen
@@ -167,10 +167,10 @@ def gen_dataset(voxel_model, path, samples, voxel_space_size=32, voxel_range=1.0
     generation_process(samples, *mode[voxel_model])
 
     working_path = test_path
-    generation_process(math.ceil(samples * 0.33), *mode[voxel_model])
+    generation_process(math.ceil(samples * 0.01), *mode[voxel_model])
 
 
 if __name__ == '__main__':
     # gen_dataset("pen", "../data/dataset/", 50, pen_sizes=[6, 7, 8, 9, 10, 11, 12, 13, 14])
     # gen_dataset("sphere", "../data/dataset/", 50, pen_sizes=[6, 7, 8, 9, 10, 11, 12, 13, 14])
-    gen_dataset("qube", "dataset/", 1, qube_sizes=[9], voxel_space_size=32, voxel_range=1.0)
+    gen_dataset("qube", "dataset/", 1, qube_sizes=[9,9,9,9,9,9,9,9,9,9], voxel_space_size=32, voxel_range=1.0)
