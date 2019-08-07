@@ -81,7 +81,7 @@ def safe_sample(points, occ, voxel, path, attr):
     safe_dir = path + str(files).zfill(5) + "/"
     if not os.path.exists(safe_dir):
         os.makedirs(safe_dir)
-    np.savez(safe_dir + "sample.npz", points=points, occ=occ, voxel=voxel, size=attr[0], yaw_pitch_roll=attr[1:])
+    np.savez(safe_dir + "sample.npz", points=points, occ=occ, voxel=voxel, size=attr[0], transl=attr[1], yaw_pitch_roll=attr[2:])
 
 
 # Helper function to generate occs and points as well as returning the correct path to store the samples
@@ -112,23 +112,25 @@ def gen_samples(generator, config_list):
 
 def generation_process(samples, gen_meth, size):
     transf_spheres = []
+    mean = [0, 0, 0]
+    cov = [[0.015, 0, 0], [0, 0.015, 0], [0, 0, 0.015]]
 
     for shapeSize in size:
         for k in range(samples):
             dimension = voxelRange * shapeSize / voxelSpaceSize
             cloud = gen_meth(size=voxelSpaceSize, dimension=dimension)
             # cloud = generate_cloud_sphere(size=voxelSpaceSize, dimension=dimension)
-
+            transl = np.random.multivariate_normal(mean, cov, 1)[0]
             quat = Quaternion.random()
-            cloud_transformed = transform_cloud(cloud, quat)  #
+            cloud_transformed = transform_cloud(cloud, quat, cube_position=transl)  #
 
             # voxel = cloud2voxel(cloud_transformed, voxelRange, size=voxelSpaceSize)
-            transf_spheres.append((cloud_transformed, (shapeSize, *quat.yaw_pitch_roll)))
+            transf_spheres.append((cloud_transformed, (shapeSize, transl, *quat.yaw_pitch_roll)))
     gen_samples(occ_generation, transf_spheres)
 
 
-def gen_dataset(voxel_model, path, samples, voxel_space_size=16, voxel_range=2.0, pen_sizes=[6, 7, 8, 9, 10, 11],
-                sphere_sizes=[8, 9, 10, 11, 12, 13], qube_sizes=[4, 5, 6, 7, 8, 9]):
+def gen_dataset(voxel_model, path, samples, voxel_space_size=32, voxel_range=1.0, pen_sizes=[6, 7, 8, 9, 10, 11],
+                sphere_sizes=[8, 9, 10, 11, 12, 13], qube_sizes=[9]):
     '''
     Generate the voxel qube dataset.
     :param voxel_model (String): qube | sphere | pen
@@ -157,8 +159,8 @@ def gen_dataset(voxel_model, path, samples, voxel_space_size=16, voxel_range=2.0
     voxelRange = voxel_range
     # path += voxel_model + "/"
     create_dataset_dir(path)
-    train_path =os.path.join( path, "train", '')
-    test_path = os.path.join( path, "test", '')
+    train_path = os.path.join(path, "train", '')
+    test_path = os.path.join(path, "test", '')
     global working_path
 
     working_path = train_path
@@ -169,6 +171,6 @@ def gen_dataset(voxel_model, path, samples, voxel_space_size=16, voxel_range=2.0
 
 
 if __name__ == '__main__':
-    gen_dataset("pen", "../data/dataset/", 50, pen_sizes=[6, 7, 8, 9, 10, 11, 12, 13, 14])
-    gen_dataset("sphere", "../data/dataset/", 50, pen_sizes=[6, 7, 8, 9, 10, 11, 12, 13, 14])
-    gen_dataset("qube", "../data/dataset/", 50, pen_sizes=[6, 7, 8, 9, 10, 11, 12, 13, 14])
+    # gen_dataset("pen", "../data/dataset/", 50, pen_sizes=[6, 7, 8, 9, 10, 11, 12, 13, 14])
+    # gen_dataset("sphere", "../data/dataset/", 50, pen_sizes=[6, 7, 8, 9, 10, 11, 12, 13, 14])
+    gen_dataset("qube", "dataset/", 1, qube_sizes=[9], voxel_space_size=32, voxel_range=1.0)

@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import os
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+from VoxelView.main import generate_cloud_pen, generate_cloud_sphere, generate_cloud_cube, transform_cloud, cloud2voxel
 
 
 def vis_data(dir_in, dir_out):
@@ -19,13 +20,26 @@ def vis_data(dir_in, dir_out):
             print("Name: ", name)
             data = np.load(name)
             voxel = np.array(data["voxel"], dtype=np.float)
-            print(voxel)
+            points = data["points"]
+            occ = data["occ"]
+            transl = data["transl"]
+            print(transl)
+            print(points.shape)
+            print(occ)
+            occ_points = points[occ == 1]
+            print(occ_points.shape)
+            voxel_rec = cloud2voxel(occ_points,1.0, 32)
             # voxel = generate_cloud_cube()
             # ma = np.random.choice([0, 1], size=(16, 16, 16), p=[0.99, 0.01])
-            fig = plt.figure()
-            ax = fig.gca(projection='3d')
-            ax.set_aspect('equal')
-            ax.voxels(voxel, edgecolor="k")
+            # fig = plt.figure()
+            fix, axes = plt.subplots(1,3,subplot_kw=dict(projection='3d'), figsize=(25,20))
+            # ax = fig.gca(projection='3d')
+            axes[0].set_aspect('equal')
+            axes[1].set_aspect('equal')
+            axes[2].set_aspect('equal')
+            axes[0].voxels(voxel, edgecolor="k")
+            axes[1].scatter(occ_points[:,0], occ_points[:,1], occ_points[:,2])
+            axes[2].voxels(voxel_rec, edgecolor="k")
             # ax.view_init(elev=0, azim=0)
             # ax.dist = 3
             # ax.set_axis_off()
@@ -61,6 +75,6 @@ def vis_latent_space(path, sample_path):
 
 if __name__ == '__main__':
     dir_out = "../out/sphere/plots/"
-    dir_in = "dataset/pen/train"
+    dir_in = "dataset/train"
     vis_data(dir_in, dir_out)
     # vis_latent_space(dir_out, "../assets/latent_samples_spheres.npy")
