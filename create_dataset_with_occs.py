@@ -42,7 +42,7 @@ def create_dataset_dir(path):
         os.makedirs(path + "test/")
 
 
-def gen_points(cloud, samples):
+def generate_occs(cloud, samples):
     '''
     Sample points from uniform distribution in unit qube and calculate the corresponding occupancies to the
     given pointcloud,
@@ -64,15 +64,16 @@ def gen_points(cloud, samples):
     return points, occ
 
 
-def safe_sample(points, occ, voxel, path, attr):
+def write_samples_to_file(points, occ, voxel, path, attr):
     '''
-    Safe data to a sample.npz file.
+    Stores generated voxel/pointcloud, occs and attributes in a sample.npy file.
     The file will be stored in the given path.
     A new directory will be created which contains the sample npz file.
     :param points:
     :param occ:
     :param voxel:
     :param path:
+    :param attr
     '''
     if (voxel is None):
         return
@@ -86,17 +87,13 @@ def safe_sample(points, occ, voxel, path, attr):
 
 # Helper function to generate occs and points as well as returning the correct path to store the samples
 
-def occ_generation(cloud):
-    points, occs = gen_points(cloud[0], point_samples)
+def voxel_generation(cloud):
+    points, occs = generate_occs(cloud[0], point_samples)
     voxel = cloud2voxel(cloud[0], voxelRange, size=voxelSpaceSize)
     return points, occs, voxel, working_path, np.array(cloud[1])
 
 
-# Parallelizes the generation of occupancies.
-# This is done by testing 100000 if they are inside the convex hull of the previous generated Pintcloud
-#  Subsequently the voxels will be generated from the pointcloud.
-#  points, occupancies and the voxel data will all bestored in a singele .npz file
-def gen_samples(generator, config_list):
+def multiprocessing_voxel_generation(generator, config_list):
     '''
     Used for parallel calculation of the occupancies.
     :param generator: helper methodname which calcupates occs (qube | sphere | pen)
@@ -107,26 +104,53 @@ def gen_samples(generator, config_list):
     pool.close()
     pool.join()
     for res in results:
-        safe_sample(*res)
+        write_samples_to_file(*res)
+
+def pointcloud_generation(config):
+    '''
+    Create transformed pointcloud according to the config it is given.
+    :param config: Tuple-like:  [0]: dimension of the pointcloud
+                                [1]: pointcloud generation method
+                                [2]: size
+    :return: Transformed pointcloud with its attributes: size, translation, yaw, pitch, roll
+    '''
+    mean = [0, 0, 0]
+    cov = [[0.015, 0, 0], [0, 0.015, 0], [0, 0, 0.015]]
+    dimension = config[0]
+    cloud = config[1](size=voxelSpaceSize, dimension=dimension)
+    # cloud = generate_cloud_sphere(size=voxelSpaceSize, dimension=dimension)
+    transl = np.random.uniform([-0.6, -0.6, -0.6], [0.6, 0.6, 0.6], (1,3))[0]
+    # transl = np.random.multivariate_normal(mean, cov, 1)[0]
+    quat = Quaternion.random()
+    cloud_transformed = transform_cloud(cloud, quat, cube_position=transl)  #
+    # config.append((dimension, quat, transl))
+    # voxel = cloud2voxel(cloud_transformed, voxelRange, size=voxelSpaceSize)
+    return cloud_transformed, (config[2], transl, *quat.yaw_pitch_roll)
+
+
+def multiprocessing_pointcloud_generation(generator, config_list):
+    pool = Pool(cpu_count())
+    results = pool.map(generator, config_list)
+    pool.close()
+    pool.join()
+    return results
 
 
 def generation_process(samples, gen_meth, size):
-    transf_spheres = []
-    mean = [0, 0, 0]
-    cov = [[0.015, 0, 0], [0, 0.015, 0], [0, 0, 0.015]]
-
+    '''
+    Generate configs dor pointcloud and voxel generation and coordinate the execution.
+    :param samples: Amount of saqmples to generate per size
+    :param gen_meth: generation method for pointcloud generation
+    :param size: List of sizes for pointcloud generation
+    :return:
+    '''
     for shapeSize in size:
+        config = []
         for k in range(samples):
             dimension = voxelRange * shapeSize / voxelSpaceSize
-            cloud = gen_meth(size=voxelSpaceSize, dimension=dimension)
-            # cloud = generate_cloud_sphere(size=voxelSpaceSize, dimension=dimension)
-            transl = np.random.multivariate_normal(mean, cov, 1)[0]
-            quat = Quaternion.random()
-            cloud_transformed = transform_cloud(cloud, quat, cube_position=transl)  #
-
-            # voxel = cloud2voxel(cloud_transformed, voxelRange, size=voxelSpaceSize)
-            transf_spheres.append((cloud_transformed, (shapeSize, transl, *quat.yaw_pitch_roll)))
-    gen_samples(occ_generation, transf_spheres)
+            config.append((dimension,gen_meth, shapeSize))
+        transf_spheres = multiprocessing_pointcloud_generation(pointcloud_generation, config)
+        multiprocessing_voxel_generation(voxel_generation, transf_spheres)
 
 
 def gen_dataset(voxel_model, path, samples, voxel_space_size=32, voxel_range=1.0, pen_sizes=[6, 7, 8, 9, 10, 11],
@@ -173,4 +197,4 @@ def gen_dataset(voxel_model, path, samples, voxel_space_size=32, voxel_range=1.0
 if __name__ == '__main__':
     # gen_dataset("pen", "../data/dataset/", 50, pen_sizes=[6, 7, 8, 9, 10, 11, 12, 13, 14])
     # gen_dataset("sphere", "../data/dataset/", 50, pen_sizes=[6, 7, 8, 9, 10, 11, 12, 13, 14])
-    gen_dataset("qube", "dataset/", 1, qube_sizes=[9,9,9,9,9,9,9,9,9,9], voxel_space_size=32, voxel_range=1.0)
+    gen_dataset("qube", "dataset/", 100, qube_sizes=[9], voxel_space_size=32, voxel_range=1.0)
